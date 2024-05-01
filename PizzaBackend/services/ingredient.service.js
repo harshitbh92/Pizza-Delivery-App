@@ -6,8 +6,9 @@ module.exports = {
   async createIngredientsCategory(name, restaurantId) {
     try {
       let category = await IngredientCategory.findOne({
-        restaurant: restaurantId,
         name: name,
+        restaurant: restaurantId,
+        
       });
       if (category) {
         return category;
@@ -21,7 +22,7 @@ module.exports = {
       category = new IngredientCategory({
         name: name,
         restaurant: restaurantId,
-      })
+      });
       const createdCategory = await category.save();
       return createdCategory;
     } catch (error) {
@@ -60,7 +61,9 @@ module.exports = {
 
   async findRestaurantsIngredients(restaurantId) {
     try {
-      const items = await IngredientsItem.find({ restaurant: restaurantId }).populate("category");
+      const items = await IngredientsItem.find({
+        restaurant: restaurantId,
+      }).populate("category");
       return items;
     } catch (error) {
       throw new Error(
@@ -87,8 +90,8 @@ module.exports = {
       let item = await IngredientsItem.findOne({
         restaurant: restaurantId,
         name: ingredientName,
-        category: category._id,
-      }).populate("category");;
+        category: category.name,
+      }).populate("category")
       if (item) {
         return item;
       }
@@ -102,7 +105,8 @@ module.exports = {
         name: ingredientName,
         restaurant: restaurantId,
         category: category._id,
-      }).populate("category");;
+        inStoke : true
+      }).populate("category")
       const savedItem = await item.save();
       category.ingredients.push(savedItem._id);
       await category.save();
